@@ -1,3 +1,4 @@
+
 # BrewQueue – Coffee Shop Order Manager
 
 CS 2114 · Project 3 · Deliverable 3: First Prototype
@@ -19,10 +20,10 @@ BrewQueue is a console app where customers place drink orders and baristas compl
 `OrderManagerTest.java` (Seongjin Nam)
 
 1. Open the project in Eclipse.
-2. Make sure Order.java, LinkedQueue.java, and OrderManager.java are implemented.
+2. Make sure `Order.java`, `LinkedQueue.java`, and `OrderManager.java` are implemented.
 3. Right-click `OrderManagerTest.java` and select **Run As → JUnit Test**.
 4. The 16 prepared tests cover order placement, FIFO ordering, unique order numbers, invalid inputs, empty queues, and order cancellation.
-5. These tests still need to be executed with the completed Order.java.
+5. These tests still need to be executed after `Order.java` is completed.
 
 ### Run the thin view
 
@@ -42,9 +43,9 @@ BrewQueue is a console app where customers place drink orders and baristas compl
 
 **OrderManager (Seongjin Nam):**
 
-- **Classes:** OrderManager was implemented based on our specification using LinkedQueue<Order> to manage pending customer orders. No additional classes were needed for the order management logic.
-- **Method signatures:** Implemented placeOrder(), viewNextOrder(), completeNextOrder(), getPendingOrders(), getPendingOrderCount(), and cancelOrder(). The methods follow our original design.
-- **Where validation lives:** OrderManager checks for invalid customer names and blank drink or size inputs. Invalid inputs throw IllegalArgumentException before changing the queue or advancing the order number. The Order class is expected to validate the permitted drink types and sizes.
+- **Classes:** OrderManager was implemented based on our specification using `LinkedQueue<Order>` to manage pending customer orders. No additional classes were needed for the order management logic.
+- **Method signatures:** Implemented `placeOrder()`, `viewNextOrder()`, `completeNextOrder()`, `getPendingOrders()`, `getPendingOrderCount()`, and `cancelOrder()`. The methods follow our original design.
+- **Where validation lives:** OrderManager checks for invalid customer names and blank drink or size inputs. Invalid inputs throw IllegalArgumentException before changing the queue or advancing the order number. The Order class is expected to validate permitted drink types and sizes.
 - **Test cases:** Prepared 16 JUnit tests covering order creation, FIFO behavior, unique order numbers, empty queue operations, invalid inputs, and order cancellation. These tests still need to be run after Order.java is completed.
 
 ### Did the model really stand alone?
@@ -61,9 +62,9 @@ OrderManager was designed to work independently of ConsoleView and BrewQueueCont
 
 In our scope, we listed three things we didn't know how to do yet:
 
-- **Cancelling an order from the middle of the queue:** The cancelOrder() method was implemented in OrderManager using dequeue() and enqueue() to remove a specific order while preserving FIFO order. The method still needs to be tested with the completed Order class.
-- **Calculating estimated wait times:** [TODO: figured out / still open]
-- **Saving pending orders to a file:** [TODO: figured out / still open]
+- **Cancelling an order from the middle of the queue:** The `cancelOrder()` method was implemented in OrderManager using dequeue() and enqueue() to remove a specific order while preserving FIFO order. The method still needs to be tested with the completed Order class.
+- **Calculating estimated wait times:** Still open. We plan to implement this feature in Deliverable 4 using the preparation times of pending orders.
+- **Saving pending orders to a file:** Still open. File persistence has not been implemented.
 
 ### What doesn't work yet?
 
@@ -91,23 +92,33 @@ The LinkedQueue implementation and its tests are complete. The next step is to v
 
 Once Order.java is completed, I will run OrderManagerTest.java and fix any failing tests. I will verify that orders are added and completed in FIFO order, invalid inputs do not modify the queue, and order numbers remain unique. I will also help verify the integration between OrderManager and BrewQueueController.
 
-Change feature
-Feature: Estimated Wait Times
+### Change feature
 
-For Deliverable 4, we plan to add estimated waiting times for customer orders. The program will calculate the estimated wait based on the preparation times of the orders ahead in the queue.
+**Feature: Estimated Wait Times**
 
-Prediction of what it will touch:
-Class	Will it change?	Methods affected
-Order	No	Use existing getPrepMinutes()
-LinkedQueue	No	Use existing toList()
-OrderManager	Yes	Add getEstimatedWaitMinutes(int orderNumber)
-ConsoleView	Yes	Add showEstimatedWaitTime()
-BrewQueueController	Yes	Update run() and add a handler for estimated wait timesWe expect the existing LinkedQueue implementation to remain unchanged because estimated wait times can be calculated using the current list of pending orders. This feature will require changes to the Model, View, and Controller without modifying the underlying queue structure.
+For Deliverable 4, we plan to add estimated waiting times for customer orders. The program will calculate an order's estimated wait based on the preparation times of the orders ahead of it in the queue.
+
+This is a non-trivial feature because it adds new calculation logic to the Model and allows users to access the estimated wait through the Controller and View.
+
+**Prediction of what it will touch:**
+
+| Class | Will it change? | Methods affected |
+| --- | --- | --- |
+| `Order` | No, if the planned method is implemented | Use existing `getPrepMinutes()` |
+| `LinkedQueue` | No | Use existing `toList()` |
+| `OrderManager` | Yes | Add `getEstimatedWaitMinutes(int orderNumber)` |
+| `ConsoleView` | Yes | Add `showEstimatedWaitTime()` |
+| `BrewQueueController` | Yes | Update `run()` and add a handler for estimated wait times |
+
+We expect LinkedQueue to remain unchanged because the current `toList()` method provides the pending orders in FIFO order. OrderManager will calculate the estimated waiting time by adding the preparation times of orders ahead of the selected order.
+
+The Controller will request this information from OrderManager, and ConsoleView will display the result. This keeps the queue implementation independent of the user interface.
 
 ### Stretch goals
 
-- **Committing to:** [TODO]
-- **Dropping:** [TODO]
+- **Committing to:** Estimated Wait Times as our main change feature for Deliverable 4.
+- **Dropping:** Saving pending orders to a file.
+- **Already implemented in the Model, pending testing and integration:** Order Cancellation.
 
 ### New tests needed
 
@@ -117,7 +128,13 @@ Additional integration tests should verify that OrderManager maintains FIFO orde
 
 **OrderManager (Seongjin Nam):**
 
-Additional testing will verify that placeOrder() rejects invalid input without changing the queue or order number, viewNextOrder() does not remove an order, and completeNextOrder() processes orders in FIFO order. Tests for cancelOrder() will verify cancellation from the front, middle, and rear of the queue, as well as invalid order numbers. Integration tests will also be needed after the Controller and View are connected.
+Additional testing will verify that `placeOrder()` rejects invalid inputs without changing the queue or order number, `viewNextOrder()` does not remove an order, and `completeNextOrder()` processes orders in FIFO order.
+
+Tests for `cancelOrder()` will verify cancellation from the front, middle, and rear of the queue, as well as invalid order numbers.
+
+For the estimated wait time feature, new tests will verify the waiting time for the first order, multiple pending orders, an empty queue, and an order number that does not exist.
+
+Integration tests will also be needed after the Controller and View are connected.
 
 ### Who does what
 
@@ -127,6 +144,7 @@ Additional testing will verify that placeOrder() rejects invalid input without c
 | [TODO] | [TODO] |
 | [TODO] | [TODO] |
 | Verify OrderManager integration and run OrderManagerTest | Seongjin Nam |
+| Implement estimated wait time calculation in OrderManager | Seongjin Nam |
 
 ## Attribution
 
@@ -142,6 +160,6 @@ Additional testing will verify that placeOrder() rejects invalid input without c
 
 ### GenAI Note
 
-**Seongjin Nam:** I used ChatGPT to help implement OrderManager.java and draft OrderManagerTest.java based on our Deliverable 2 specification. I asked ChatGPT to help with FIFO queue operations, input validation, order cancellation, and JUnit test cases. I reviewed the suggested code against our MVC design and project requirements. The tests still need to be executed after Order.java is completed.
+**Seongjin Nam:** I used ChatGPT to help implement OrderManager.java and draft OrderManagerTest.java based on our Deliverable 2 specification. I asked ChatGPT for help with FIFO queue operations, input validation, order cancellation, JUnit test cases, and predicting which classes would need changes for the Estimated Wait Times feature. I reviewed the suggested code against our MVC design and project requirements. Full integration testing is still pending.
 
 [TODO: Other team members should add how they used GenAI, or state that they did not use it.]
