@@ -91,19 +91,18 @@ The LinkedQueue implementation and its tests are complete. The next step is to v
 
 Once Order.java is completed, I will run OrderManagerTest.java and fix any failing tests. I will verify that orders are added and completed in FIFO order, invalid inputs do not modify the queue, and order numbers remain unique. I will also help verify the integration between OrderManager and BrewQueueController.
 
-### Change feature
+Change feature
+Feature: Estimated Wait Times
 
-**Feature:** [TODO: one non-trivial feature not in the MVP, e.g. Order Cancellation or Estimated Wait Times]
+For Deliverable 4, we plan to add estimated waiting times for customer orders. The program will calculate the estimated wait based on the preparation times of the orders ahead in the queue.
 
-**Prediction of what it will touch:**
-
-| Class | Will it change? | Methods affected |
-| --- | --- | --- |
-| `Order` | [TODO] | [TODO] |
-| `LinkedQueue` | [TODO] | [TODO] |
-| `OrderManager` | [TODO] | [TODO] |
-| `ConsoleView` | [TODO] | [TODO] |
-| `BrewQueueController` | [TODO] | [TODO] |
+Prediction of what it will touch:
+Class	Will it change?	Methods affected
+Order	No	Use existing getPrepMinutes()
+LinkedQueue	No	Use existing toList()
+OrderManager	Yes	Add getEstimatedWaitMinutes(int orderNumber)
+ConsoleView	Yes	Add showEstimatedWaitTime()
+BrewQueueController	Yes	Update run() and add a handler for estimated wait timesWe expect the existing LinkedQueue implementation to remain unchanged because estimated wait times can be calculated using the current list of pending orders. This feature will require changes to the Model, View, and Controller without modifying the underlying queue structure.
 
 ### Stretch goals
 
