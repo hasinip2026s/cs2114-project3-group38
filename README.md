@@ -48,6 +48,21 @@ BrewQueue is a console app where customers place drink orders and baristas compl
 - **Where validation lives:** OrderManager checks for invalid customer names and blank drink or size inputs. Invalid inputs throw IllegalArgumentException before changing the queue or advancing the order number. The Order class is expected to validate permitted drink types and sizes.
 - **Test cases:** Prepared 16 JUnit tests covering order creation, FIFO behavior, unique order numbers, empty queue operations, invalid inputs, and order cancellation. These tests still need to be run after Order.java is completed.
 
+**BrewQueueController (Liangru Ji):**
+
+- **Classes:** BrewQueueController was implemented to connect OrderManager
+  and ConsoleView. No additional controller classes were needed.
+- **Method signatures:** Implemented the constructor, `run()`, and `main()`,
+  along with private helper methods for placing, viewing, completing, and
+  cancelling orders.
+- **Where validation lives:** The Controller checks menu numbers, customer
+  names, drink choices, and size choices. Invalid input displays an error
+  message and asks the user to try again.
+- **Test cases:** Prepared JUnit tests using scripted Scanner input to test
+  placing, completing, and cancelling orders, invalid menu choices, blank
+  names, and input ending. Full testing is pending until Order and
+  ConsoleView are complete.
+
 ### Did the model really stand alone?
 
 [TODO: Can the model run without `ConsoleView`? Did anything have to move across the model/view line? Does anything in the model still know about the view?]
@@ -142,7 +157,7 @@ Integration tests will also be needed after the Controller and View are connecte
 | --- | --- |
 | [TODO] | [TODO] |
 | [TODO] | [TODO] |
-| [TODO] | [TODO] |
+| Implement and test BrewQueueController | Liangru Ji |
 | Verify OrderManager integration and run OrderManagerTest | Seongjin Nam |
 | Implement estimated wait time calculation in OrderManager | Seongjin Nam |
 
@@ -154,12 +169,15 @@ Integration tests will also be needed after the Controller and View are connecte
 | `LinkedQueue.java` | Ash Satasia | Implemented the generic singly linked queue, including enqueue, dequeue, peek, isEmpty, size, and toList methods. |
 | `OrderManager.java` | Seongjin Nam | GenAI-assisted implementation of order placement, FIFO processing, pending order retrieval, input validation, and order cancellation. |
 | `ConsoleView.java` | [TODO] | [TODO] |
-| `BrewQueueController.java` | [TODO] | [TODO] |
+| `BrewQueueController.java` | Liangru Ji | GenAI-assisted code review, initial drafting, and development of a basic framework for the Controller implementation. |
+| `BrewQueueControllerTest.java` | Liangru Ji | GenAI-assisted preparation of JUnit tests using scripted input for menu choices, order placement, completion, cancellation, and invalid input. |
 | `LinkedQueueTest.java` | Ash Satasia | Created and ran 15 JUnit tests covering FIFO behavior, queue operations, invalid inputs, and edge cases. All 15 tests passed. |
 | `OrderManagerTest.java` | Seongjin Nam | GenAI-assisted preparation of 16 JUnit tests covering order placement, FIFO ordering, invalid inputs, empty queues, and cancellation. Testing is pending. |
 
 ### GenAI Note
 
 **Seongjin Nam:** I used ChatGPT to help implement OrderManager.java and draft OrderManagerTest.java based on our Deliverable 2 specification. I asked ChatGPT for help with FIFO queue operations, input validation, order cancellation, JUnit test cases, and predicting which classes would need changes for the Estimated Wait Times feature. I reviewed the suggested code against our MVC design and project requirements. Full integration testing is still pending.
+
+**Liangru Ji:** GenAI was used to review parts of the code, help organize an initial draft, and suggest a basic structure for BrewQueueController and its tests. I reviewed and revised the suggestions to match our specification, coding style, and team project structure.
 
 [TODO: Other team members should add how they used GenAI, or state that they did not use it.]
