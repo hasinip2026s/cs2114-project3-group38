@@ -1,8 +1,3 @@
-
-# BrewQueue – Coffee Shop Order Manager
-
-CS 2114 · Project 3
-
 Team: Ash Satasia, Seongjin Nam, Hasini Pottipati, Liangru Ji
  
 BrewQueue is a console app where customers place drink orders and baristas complete them in the order they were received. Orders are stored in a singly linked queue (FIFO).
@@ -69,8 +64,9 @@ BrewQueue is a console app where customers place drink orders and baristas compl
 **Order (Hasini Pottipati):**
  
 - **Classes:** Order was implemented as specified, with four fields (order number, customer name, drink type, size) that do not change after the order is created.
-- **Method signatures:** All eight specified methods were implemented without changes: the constructor, `getOrderNumber()`, `getCustomerName()`, `getDrinkType()`, `getSize()`, `getPrice()`, `getPrepMinutes()`, and `toString()`.
-- **Prices and prep times:** The spec listed `getPrice()` and `getPrepMinutes()` but only gave one example ("Medium Latte, $4.50, about 4 min"). I set a base price and prep time for each drink and added extra cost and time for Medium and Large, matching that example. These values are stored inside Order, so no other class needs to know them.
+- **Method signatures:** All eight specified methods were implemented: the constructor, `getOrderNumber()`, `getCustomerName()`, `getDrinkType()`, `getSize()`, `getPrice()`, `getPrepMinutes()`, and `toString()`. One signature changed: the spec said `int getPrepMinutes()`, but it now returns a `double` because Coffee takes 2.5 minutes, which an `int` cannot store. `toString()` shows whole numbers without a decimal ("about 4 min") and half minutes with one ("about 2.5 min").
+- **Menu:** Our scope listed latte, cappuccino, americano, and tea, but the Controller offers Coffee, Latte, and Tea. Order was changed to use Coffee, Latte, and Tea so both classes accept the same drinks.
+- **Prices and prep times:** The spec listed `getPrice()` and `getPrepMinutes()` but only gave one example ("Medium Latte, $4.50, about 4 min"). The base (Small) prices are Coffee $3.75, Latte $4.00, and Tea $3.50, and the base prep times are Coffee 2.5 min, Latte 3 min, and Tea 2 min. Medium adds $1.00 and 1 minute, and Large adds $1.50 and 2 minutes. These values are stored inside Order, so no other class needs to know them.
 - **Where validation lives:** As the spec said, the Order constructor throws IllegalArgumentException for a blank name or a drink or size not on the menu. Drink and size names must match the menu exactly (for example, "Latte" and "Medium").
 - **Test cases:** Created 17 JUnit tests covering every Order row in our test plan, plus tests for invalid drinks and sizes, prices, prep times, and `toString()`.
 **ConsoleView (Hasini Pottipati):**
@@ -169,7 +165,6 @@ The Controller will request this information from OrderManager, and ConsoleView 
 - **Dropping:** Saving pending orders to a file.
 - **Already implemented in the Model, pending testing and integration:** Order Cancellation.
 - **Already implemented in Order (Hasini Pottipati):** Prices. `getPrice()` returns a price based on the drink and size, and each order's price appears in `toString()`.
-
 ### New tests needed
  
 [TODO: methods and bad-input cases the new work must cover.]
