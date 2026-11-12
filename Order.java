@@ -2,6 +2,7 @@
  * Represents one customer's drink order in BrewQueue.
  * An order's information does not change after it is created.
  */
+
 public class Order {
 
     private static final String[] DRINKS =
