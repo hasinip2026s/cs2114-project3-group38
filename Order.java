@@ -5,15 +5,13 @@
 
 public class Order {
 
-    private static final String[] DRINKS =
-        { "Latte", "Cappuccino", "Americano", "Tea" };
-    private static final double[] DRINK_PRICES =
-        { 3.50, 3.75, 3.00, 2.50 };
-    private static final int[] DRINK_PREP_MINUTES = { 3, 4, 2, 2 };
+    private static final String[] DRINKS = { "Coffee", "Latte", "Tea" };
+    private static final double[] DRINK_PRICES = { 3.75, 4.00, 3.50 };
+    private static final double[] DRINK_PREP_MINUTES = { 2.5, 3.0, 2.0 };
 
     private static final String[] SIZES = { "Small", "Medium", "Large" };
     private static final double[] SIZE_PRICES = { 0.00, 1.00, 1.50 };
-    private static final int[] SIZE_PREP_MINUTES = { 0, 1, 2 };
+    private static final double[] SIZE_PREP_MINUTES = { 0.0, 1.0, 2.0 };
 
     private final int orderNumber;
     private final String customerName;
@@ -109,7 +107,7 @@ public class Order {
      *
      * @return the prep time in minutes
      */
-    public int getPrepMinutes() {
+    public double getPrepMinutes() {
         return DRINK_PREP_MINUTES[indexOf(DRINKS, this.drinkType)]
             + SIZE_PREP_MINUTES[indexOf(SIZES, this.size)];
     }
@@ -117,15 +115,23 @@ public class Order {
 
     /**
      * Returns the order on one line,
-     * e.g. "#4 Alex: Medium Latte, $4.50, about 4 min".
+     * e.g. "#4 Alex: Medium Latte, $5.00, about 4 min".
      *
      * @return the order as a String
      */
     @Override
     public String toString() {
-        return String.format("#%d %s: %s %s, $%.2f, about %d min",
+        double minutes = this.getPrepMinutes();
+        String prepTime;
+        if (minutes == Math.floor(minutes)) {
+            prepTime = String.format("%d", (int)minutes);
+        }
+        else {
+            prepTime = String.format("%.1f", minutes);
+        }
+        return String.format("#%d %s: %s %s, $%.2f, about %s min",
             this.orderNumber, this.customerName, this.size,
-            this.drinkType, this.getPrice(), this.getPrepMinutes());
+            this.drinkType, this.getPrice(), prepTime);
     }
 
 

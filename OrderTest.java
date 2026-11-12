@@ -96,7 +96,7 @@ public class OrderTest {
     @Test
     public void testGetPrice() {
         Order order = new Order(1, "Alex", "Latte", "Medium");
-        assertEquals(4.50, order.getPrice(), 0.001);
+        assertEquals(5.00, order.getPrice(), 0.001);
     }
 
 
@@ -104,31 +104,31 @@ public class OrderTest {
     public void testGetPriceChangesWithSize() {
         Order small = new Order(1, "Alex", "Tea", "Small");
         Order large = new Order(2, "Sam", "Tea", "Large");
-        assertEquals(2.50, small.getPrice(), 0.001);
-        assertEquals(4.00, large.getPrice(), 0.001);
+        assertEquals(3.50, small.getPrice(), 0.001);
+        assertEquals(5.00, large.getPrice(), 0.001);
     }
 
 
     @Test
     public void testGetPrepMinutes() {
         Order order = new Order(1, "Alex", "Latte", "Medium");
-        assertEquals(4, order.getPrepMinutes());
+        assertEquals(4.0, order.getPrepMinutes(), 0.001);
     }
 
 
     @Test
     public void testGetPrepMinutesChangesWithSize() {
-        Order small = new Order(1, "Alex", "Americano", "Small");
-        Order large = new Order(2, "Sam", "Americano", "Large");
-        assertEquals(2, small.getPrepMinutes());
-        assertEquals(4, large.getPrepMinutes());
+        Order small = new Order(1, "Alex", "Coffee", "Small");
+        Order large = new Order(2, "Sam", "Coffee", "Large");
+        assertEquals(2.5, small.getPrepMinutes(), 0.001);
+        assertEquals(4.5, large.getPrepMinutes(), 0.001);
     }
 
 
     @Test
     public void testToString() {
         Order order = new Order(4, "Alex", "Latte", "Medium");
-        assertEquals("#4 Alex: Medium Latte, $4.50, about 4 min",
+        assertEquals("#4 Alex: Medium Latte, $5.00, about 4 min",
             order.toString());
     }
 }
