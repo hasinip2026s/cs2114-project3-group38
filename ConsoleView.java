@@ -2,28 +2,16 @@ import java.util.List;
 import java.util.Scanner;
 
 /**
- * Displays BrewQueue's menu, messages, and orders in the console,
- * and reads what the user types. It never changes the model.
+ * View layer: displays menus, messages and orders, and reads user input.
+ * It does not store or modify the order queue.
  */
-
 public class ConsoleView {
-
     private final Scanner scanner;
 
-
-    /**
-     * Creates the view, reading from the given Scanner.
-     *
-     * @param scanner where user input is read from
-     */
     public ConsoleView(Scanner scanner) {
         this.scanner = scanner;
     }
 
-
-    /**
-     * Prints the six menu options.
-     */
     public void showMainMenu() {
         System.out.println();
         System.out.println("=== BrewQueue ===");
@@ -32,52 +20,29 @@ public class ConsoleView {
         System.out.println("3. Complete Next Order");
         System.out.println("4. Pending Orders");
         System.out.println("5. Cancel Order");
-        System.out.println("6. Exit");
+        System.out.println("6. Check ETA");
+        System.out.println("7. Exit");
     }
 
-
-    /**
-     * Prints the options, numbered from 1.
-     *
-     * @param options the options to print
-     */
     public void showChoices(String[] options) {
         for (int i = 0; i < options.length; i++) {
             System.out.println((i + 1) + ". " + options[i]);
         }
     }
 
-
-    /**
-     * Prints the prompt and returns the answer with extra spaces trimmed.
-     *
-     * @param prompt the text to show before reading
-     * @return the trimmed answer, or null if input has ended
-     */
+    /** Returns null when input has ended. */
     public String readLine(String prompt) {
         System.out.print(prompt);
-        if (!this.scanner.hasNextLine()) {
+        if (!scanner.hasNextLine()) {
             return null;
         }
-        return this.scanner.nextLine().trim();
+        return scanner.nextLine().trim();
     }
 
-
-    /**
-     * Prints the message.
-     *
-     * @param message the message to print
-     */
     public void showMessage(String message) {
         System.out.println(message);
     }
 
-
-    /**
-     * Prints each waiting order and the count.
-     *
-     * @param orders the pending orders, front to rear
-     */
     public void showPendingOrders(List<Order> orders) {
         if (orders.isEmpty()) {
             System.out.println("No pending orders.");
@@ -87,5 +52,11 @@ public class ConsoleView {
             System.out.println(order);
         }
         System.out.println("Pending orders: " + orders.size());
+    }
+
+    /** Displays values calculated by the model through the controller. */
+    public void showEstimatedWaitTime(int orderNumber, double wait, double ready) {
+        System.out.printf("Order #%d | Wait to start: %.1f min | Ready in: %.1f min%n",
+            orderNumber, wait, ready);
     }
 }

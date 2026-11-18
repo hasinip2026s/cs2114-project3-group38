@@ -1,74 +1,44 @@
 import java.util.Scanner;
 
-// -------------------------------------------------------------------------
 /**
- * Connects OrderManager and ConsoleView and controls the application flow.
- *
- * @author Liangru Ji
- * @version 2026.11.11
+ * Coordinates the BrewQueue model and console view. Based on the team's initial
+ * controller design (Liangru Ji, 2026.11.11). D4 adds Hot/Iced selection and
+ * ETA through the model.
  */
 public class BrewQueueController
 {
-
-    // ~ Fields ................................................................
-
-    private OrderManager orderManager;
-    private ConsoleView view;
+    private final OrderManager orderManager;
+    private final ConsoleView view;
     private boolean running;
 
-    private String coffee;
-    private String latte;
-    private String tea;
+    private static final String[] DRINK_OPTIONS = { "Coffee", "Latte", "Tea" };
+    private static final String[] TEMPERATURE_OPTIONS = { "Hot", "Iced" };
+    private static final String[] SIZE_OPTIONS = { "Small", "Medium", "Large" };
 
-    private String small;
-    private String medium;
-    private String large;
-
-    // ~ Constructors ..........................................................
-
-    // ----------------------------------------------------------
-    /**
-     * Creates a controller with its model and view.
-     *
-     * @param orderManager
-     *            The model that manages orders.
-     * @param view
-     *            The console view used for input and output.
-     */
     public BrewQueueController(OrderManager orderManager, ConsoleView view)
     {
+        if (orderManager == null || view == null)
+        {
+            throw new IllegalArgumentException(
+                "Model and view cannot be null.");
+        }
         this.orderManager = orderManager;
         this.view = view;
-        running = false;
-        coffee = "Coffee";
-        latte = "Latte";
-        tea = "Tea";
-        small = "Small";
-        medium = "Medium";
-        large = "Large";
+        this.running = false;
     }
 
-    // ~ Public Methods ........................................................
 
-
-    // ----------------------------------------------------------
-    /**
-     * Shows the menu and processes choices until the user exits.
-     */
     public void run()
     {
         running = true;
-
         while (running)
         {
             view.showMainMenu();
-            int choice = readNumber("Choose an option: ", 1, 6);
-
+            int choice = readNumber("Choose an option: ", 1, 7);
             if (!running)
             {
                 break;
             }
-
             switch (choice)
             {
                 case 1:
@@ -87,6 +57,9 @@ public class BrewQueueController
                     cancelOrder();
                     break;
                 case 6:
+                    checkEta();
+                    break;
+                case 7:
                     stopRunning();
                     break;
                 default:
@@ -96,13 +69,6 @@ public class BrewQueueController
     }
 
 
-    // ----------------------------------------------------------
-    /**
-     * Creates the model, view, and controller and starts the program.
-     *
-     * @param args
-     *            Command-line arguments are not used.
-     */
     public static void main(String[] args)
     {
         Scanner scanner = new Scanner(System.in);
@@ -113,37 +79,46 @@ public class BrewQueueController
         scanner.close();
     }
 
-    // ~ Private Methods .......................................................
 
-
-    // ----------------------------------------------------------
-    /**
-     * Reads order information and asks the model to place the order.
-     */
     private void placeOrder()
     {
-        String[] drinkOptions = { coffee, latte, tea };
-        String[] sizeOptions = { small, medium, large };
-
         String name = readName();
         if (!running)
         {
             return;
         }
-        String drink = readChoice(drinkOptions);
+
+        view.showMessage("Choose a drink:");
+        String drink = readChoice(DRINK_OPTIONS);
         if (!running)
         {
             return;
         }
-        String size = readChoice(sizeOptions);
+
+        view.showMessage("Choose a temperature:");
+        String temperature = readChoice(TEMPERATURE_OPTIONS);
         if (!running)
         {
             return;
         }
+
+        view.showMessage("Choose a size:");
+        String size = readChoice(SIZE_OPTIONS);
+        if (!running)
+        {
+            return;
+        }
+
         try
         {
-            Order order = orderManager.placeOrder(name, drink, size);
+            // The model accepts "Hot Latte", "Iced Latte", etc.
+            Order order =
+                orderManager.placeOrder(name, temperature + " " + drink, size);
             view.showMessage("Order placed: " + order);
+            view.showEstimatedWaitTime(
+                order.getOrderNumber(),
+                orderManager.getEstimatedWaitMinutes(order.getOrderNumber()),
+                orderManager.getEstimatedReadyMinutes(order.getOrderNumber()));
         }
         catch (IllegalArgumentException exception)
         {
@@ -153,14 +128,9 @@ public class BrewQueueController
     }
 
 
-    // ----------------------------------------------------------
-    /**
-     * Displays the next order without removing it.
-     */
     private void viewNextOrder()
     {
         Order order = orderManager.viewNextOrder();
-
         if (order == null)
         {
             view.showMessage("No pending orders.");
@@ -172,14 +142,9 @@ public class BrewQueueController
     }
 
 
-    // ----------------------------------------------------------
-    /**
-     * Completes and displays the next order.
-     */
     private void completeNextOrder()
     {
         Order order = orderManager.completeNextOrder();
-
         if (order == null)
         {
             view.showMessage("No pending orders.");
@@ -191,17 +156,12 @@ public class BrewQueueController
     }
 
 
-    // ----------------------------------------------------------
-    /**
-     * Reads an order number and asks the model to cancel it.
-     */
     private void cancelOrder()
     {
         int orderNumber = readNumber(
             "Enter the order number to cancel: ",
             1,
             Integer.MAX_VALUE);
-
         if (!running)
         {
             return;
@@ -217,18 +177,25 @@ public class BrewQueueController
     }
 
 
-    // ----------------------------------------------------------
-    /**
-     * Reads a whole number within the given range.
-     *
-     * @param prompt
-     *            The message shown before reading input.
-     * @param min
-     *            The smallest accepted number.
-     * @param max
-     *            The largest accepted number.
-     * @return A valid number in the given range.
-     */
+    private void checkEta()
+    {
+        int orderNumber =
+            readNumber("Enter order number: ", 1, Integer.MAX_VALUE);
+        if (!running)
+        {
+            return;
+        }
+        double wait = orderManager.getEstimatedWaitMinutes(orderNumber);
+        if (wait < 0)
+        {
+            view.showMessage("Order not found.");
+            return;
+        }
+        double ready = orderManager.getEstimatedReadyMinutes(orderNumber);
+        view.showEstimatedWaitTime(orderNumber, wait, ready);
+    }
+
+
     private int readNumber(String prompt, int min, int max)
     {
         while (running)
@@ -249,23 +216,15 @@ public class BrewQueueController
             }
             catch (NumberFormatException exception)
             {
-                // The message below also handles non-integer input.
+                // Retry using the same error message for all invalid numbers.
             }
-
             view.showMessage(
                 "Please enter a whole number from " + min + " to " + max + ".");
         }
-
         return min;
     }
 
 
-    // ----------------------------------------------------------
-    /**
-     * Reads a customer name containing 1 to 30 characters.
-     *
-     * @return A valid customer name, or null if input ends.
-     */
     private String readName()
     {
         while (running)
@@ -280,22 +239,12 @@ public class BrewQueueController
             {
                 return name;
             }
-
             view.showMessage("Name must contain 1 to 30 characters.");
         }
-
         return null;
     }
 
 
-    // ----------------------------------------------------------
-    /**
-     * Reads a listed choice by its number or name.
-     *
-     * @param options
-     *            The choices available to the user.
-     * @return The selected option, or null if input ends.
-     */
     private String readChoice(String[] options)
     {
         while (running)
@@ -325,22 +274,15 @@ public class BrewQueueController
                     }
                 }
             }
-
             view.showMessage("Please choose one of the listed options.");
         }
-
         return null;
     }
 
 
-    // ----------------------------------------------------------
-    /**
-     * Displays a goodbye message and stops the menu loop.
-     */
     private void stopRunning()
     {
         view.showMessage("Goodbye!");
         running = false;
     }
-
 }

@@ -1,12 +1,12 @@
 import static org.junit.jupiter.api.Assertions.*;
-
 import org.junit.jupiter.api.Test;
 
-/** Tests Order independently of the view and controller. */
-public class OrderTest {
-
+/** Tests Order's validation, drink choices, prices and prep estimates. */
+public class OrderTest
+{
     @Test
-    public void testConstructor() {
+    public void testConstructor()
+    {
         Order order = new Order(1, "Alex", "Latte", "Medium");
         assertEquals(1, order.getOrderNumber());
         assertEquals("Alex", order.getCustomerName());
@@ -16,35 +16,75 @@ public class OrderTest {
 
 
     @Test
-    public void testConstructorBlankName() {
-        assertThrows(IllegalArgumentException.class,
+    public void testConstructorBlankName()
+    {
+        assertThrows(
+            IllegalArgumentException.class,
             () -> new Order(1, "   ", "Latte", "Medium"));
     }
 
 
     @Test
-    public void testConstructorDrinkNotOnMenu() {
-        assertThrows(IllegalArgumentException.class,
+    public void testConstructorNullAndLongName()
+    {
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> new Order(1, null, "Latte", "Medium"));
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> new Order(
+                1,
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDE",
+                "Latte",
+                "Medium"));
+    }
+
+
+    @Test
+    public void testConstructorDrinkNotOnMenu()
+    {
+        assertThrows(
+            IllegalArgumentException.class,
             () -> new Order(1, "Alex", "Mocha", "Medium"));
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> new Order(1, "Alex", null, "Medium"));
     }
 
 
     @Test
-    public void testConstructorSizeNotOnMenu() {
-        assertThrows(IllegalArgumentException.class,
+    public void testConstructorSizeNotOnMenu()
+    {
+        assertThrows(
+            IllegalArgumentException.class,
             () -> new Order(1, "Alex", "Latte", "Huge"));
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> new Order(1, "Alex", "Latte", null));
     }
 
 
     @Test
-    public void testGetOrderNumber() {
-        Order order = new Order(1, "Alex", "Latte", "Medium");
-        assertEquals(1, order.getOrderNumber());
+    public void testConstructorInvalidOrderNumber()
+    {
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> new Order(0, "Alex", "Latte", "Small"));
     }
 
 
     @Test
-    public void testGetOrderNumberUnchanged() {
+    public void testGetOrderNumber()
+    {
+        assertEquals(
+            1,
+            new Order(1, "Alex", "Latte", "Medium").getOrderNumber());
+    }
+
+
+    @Test
+    public void testGetOrderNumberUnchanged()
+    {
         Order order = new Order(5, "Alex", "Latte", "Medium");
         assertEquals(5, order.getOrderNumber());
         assertEquals(5, order.getOrderNumber());
@@ -52,56 +92,70 @@ public class OrderTest {
 
 
     @Test
-    public void testGetCustomerName() {
-        Order order = new Order(1, "Alex", "Latte", "Medium");
-        assertEquals("Alex", order.getCustomerName());
+    public void testGetCustomerName()
+    {
+        assertEquals(
+            "Alex",
+            new Order(1, "Alex", "Latte", "Medium").getCustomerName());
     }
 
 
     @Test
-    public void testGetCustomerNameOneCharacter() {
-        Order order = new Order(1, "A", "Latte", "Medium");
-        assertEquals("A", order.getCustomerName());
+    public void testGetCustomerNameOneCharacter()
+    {
+        assertEquals(
+            "A",
+            new Order(1, "A", "Latte", "Medium").getCustomerName());
     }
 
 
     @Test
-    public void testGetDrinkTypeLatte() {
-        Order order = new Order(1, "Alex", "Latte", "Medium");
-        assertEquals("Latte", order.getDrinkType());
+    public void testGetDrinkTypeLatte()
+    {
+        assertEquals(
+            "Latte",
+            new Order(1, "Alex", "Latte", "Medium").getDrinkType());
     }
 
 
     @Test
-    public void testGetDrinkTypeTea() {
-        Order order = new Order(1, "Alex", "Tea", "Medium");
-        assertEquals("Tea", order.getDrinkType());
+    public void testGetDrinkTypeTea()
+    {
+        assertEquals(
+            "Tea",
+            new Order(1, "Alex", "Tea", "Medium").getDrinkType());
     }
 
 
     @Test
-    public void testGetSizeMedium() {
-        Order order = new Order(1, "Alex", "Latte", "Medium");
-        assertEquals("Medium", order.getSize());
+    public void testGetSizeMedium()
+    {
+        assertEquals(
+            "Medium",
+            new Order(1, "Alex", "Latte", "Medium").getSize());
     }
 
 
     @Test
-    public void testGetSizeSmall() {
-        Order order = new Order(1, "Alex", "Latte", "Small");
-        assertEquals("Small", order.getSize());
+    public void testGetSizeSmall()
+    {
+        assertEquals("Small", new Order(1, "Alex", "Latte", "Small").getSize());
     }
 
 
     @Test
-    public void testGetPrice() {
-        Order order = new Order(1, "Alex", "Latte", "Medium");
-        assertEquals(5.00, order.getPrice(), 0.001);
+    public void testGetPrice()
+    {
+        assertEquals(
+            5.00,
+            new Order(1, "Alex", "Latte", "Medium").getPrice(),
+            0.001);
     }
 
 
     @Test
-    public void testGetPriceChangesWithSize() {
+    public void testGetPriceChangesWithSize()
+    {
         Order small = new Order(1, "Alex", "Tea", "Small");
         Order large = new Order(2, "Sam", "Tea", "Large");
         assertEquals(3.50, small.getPrice(), 0.001);
@@ -110,14 +164,18 @@ public class OrderTest {
 
 
     @Test
-    public void testGetPrepMinutes() {
-        Order order = new Order(1, "Alex", "Latte", "Medium");
-        assertEquals(4.0, order.getPrepMinutes(), 0.001);
+    public void testGetPrepMinutes()
+    {
+        assertEquals(
+            4.0,
+            new Order(1, "Alex", "Latte", "Medium").getPrepMinutes(),
+            0.001);
     }
 
 
     @Test
-    public void testGetPrepMinutesChangesWithSize() {
+    public void testGetPrepMinutesChangesWithSize()
+    {
         Order small = new Order(1, "Alex", "Coffee", "Small");
         Order large = new Order(2, "Sam", "Coffee", "Large");
         assertEquals(2.5, small.getPrepMinutes(), 0.001);
@@ -126,9 +184,47 @@ public class OrderTest {
 
 
     @Test
-    public void testToString() {
+    public void testToString()
+    {
         Order order = new Order(4, "Alex", "Latte", "Medium");
-        assertEquals("#4 Alex: Medium Latte, $5.00, about 4 min",
+        assertEquals(
+            "#4 Alex: Medium Latte, $5.00, about 4 min",
             order.toString());
+    }
+
+
+    @Test
+    public void testHotAndIcedDrinks()
+    {
+        for (String drink : new String[] { "Coffee", "Latte", "Tea" })
+        {
+            Order hot = new Order(1, "Alex", "Hot " + drink, "Small");
+            Order iced = new Order(2, "Sam", "Iced " + drink, "Small");
+            assertEquals("Hot " + drink, hot.getDrinkType());
+            assertEquals("Iced " + drink, iced.getDrinkType());
+            assertTrue(hot.toString().contains("Hot " + drink));
+            assertTrue(iced.toString().contains("Iced " + drink));
+        }
+    }
+
+
+    @Test
+    public void testIcedLattePriceAndPrepMinutes()
+    {
+        Order order = new Order(1, "Alex", "Iced Latte", "Medium");
+        assertEquals(5.0, order.getPrice(), 0.001);
+        assertEquals(4.0, order.getPrepMinutes(), 0.001);
+    }
+
+
+    @Test
+    public void testInvalidTemperatureOrDrinkCombination()
+    {
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> new Order(1, "Alex", "Warm Latte", "Medium"));
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> new Order(1, "Alex", "Iced Mocha", "Medium"));
     }
 }
