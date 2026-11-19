@@ -9,13 +9,13 @@ BrewQueue is a console-based drink ordering application. Customers place orders,
 
 Our project follows a Model-View-Controller design:
 
-- **Model:** `Order` stores order details, prices, and preparation-time estimates; `LinkedQueue<T>` stores pending orders; and `OrderManager` manages the queue, order numbers, cancellation, and ETA calculations.
+- **Model:** `Order` stores order details, the time each order was placed, prices, and preparation-time estimates; `LinkedQueue<T>` stores pending orders; and `OrderManager` manages the queue, order numbers, cancellation, and ETA calculations.
 - **View:** `ConsoleView` reads input and prints menus, orders, and messages. It does not store a second copy of the order queue.
 - **Controller:** `BrewQueueController` interprets user choices and connects the view to the model.
 
 ## Current Features
 
-1. Place an order with a customer name, Coffee/Latte/Tea, Hot/Iced, and Small/Medium/Large.
+1. Place an order with a customer name, Coffee/Latte/Tea, Hot/Iced, and Small/Medium/Large. Each order records the time it was placed and shows it with the order, e.g. `#1 Alex: Medium Iced Latte, $5.00, about 4 min, placed 2:57 PM`.
 2. View the next pending order without removing it.
 3. Complete the next order in FIFO order.
 4. Display all pending orders.
@@ -65,11 +65,11 @@ java BrewQueueController
 | Test file | Test methods | Main coverage |
 | --- | ---: | --- |
 | `LinkedQueueTest.java` | 16 | Enqueue/dequeue, peek, empty queue, null input, FIFO ordering, interleaved operations, `toList()` |
-| `OrderTest.java` | 22 | Construction, getters, validation, prices, preparation times, Hot/Iced choices |
-| `OrderManagerTest.java` | 22 | Order creation, unique numbers, cancellation, FIFO behavior, ETA, invalid order numbers |
+| `OrderTest.java` | 23 | Construction, getters, validation, prices, preparation times, Hot/Iced choices, time placed |
+| `OrderManagerTest.java` | 19 | Order creation, unique numbers, cancellation, FIFO behavior, ETA, invalid order numbers |
 | `ConsoleViewTest.java` | 8 | Menu, input/output, pending orders, ETA display |
 | `BrewQueueControllerTest.java` | 20 | Scripted console choices, ordering, temperature, ETA, invalid input, exit |
-| **Total** | **88** | |
+| **Total** | **86** | |
 
 All five JUnit test classes were run successfully in Eclipse for Deliverable 4, with no reported test failures or errors. The model tests directly construct and exercise the model classes without requiring `ConsoleView` or `BrewQueueController`.
 
@@ -115,6 +115,17 @@ All core MVP actions and the planned ETA feature are implemented, and the curren
 
 A useful improvement would be to store temperature as a separate `Order` field or enum instead of putting `Hot` or `Iced` into the drink name. We could also move menu choices, prices, and prep times into a dedicated menu/configuration class. These changes would make it easier to add drinks or pricing rules without editing several arrays or relying on specific display strings. Keeping all ETA calculations in `OrderManager` already makes future presentation changes easier.
 
+## Final Build Change: Time Placed
+
+Each `Order` now records the time it was placed. The constructor stores `LocalTime.now()` (to the minute) in a new `timePlaced` field, `getTimePlaced()` returns it, and `toString()` adds it to the end of the order line in the format `placed 2:57 PM`.
+
+| File | Change |
+| --- | --- |
+| `Order.java` | Added the `timePlaced` field, `getTimePlaced()`, and the time in `toString()`. |
+| `OrderTest.java` | Added `testGetTimePlaced()` and updated `testToString()` to expect the time placed. |
+
+No other class changed. `ConsoleView` and `BrewQueueController` already display orders through `Order.toString()`, so the time appears on the order confirmation, View Next Order, and Pending Orders without any view or controller edits. Like the other `Order` fields, `timePlaced` never changes after the order is created, so canceling or completing other orders does not affect it.
+
 ## Next Steps
 
 ### Remaining work for the final build (in priority order)
@@ -127,7 +138,7 @@ A useful improvement would be to store temperature as a separate `Order` field o
 
 ### Stretch goals: committed vs. dropped
 
-- **Committed:** Estimated Wait Times, Order Cancellation, and Hot/Iced selection. These features are implemented in the current prototype and will be kept for the final build.
+- **Committed:** Estimated Wait Times, Order Cancellation, Hot/Iced selection, and the time each order was placed. These features are implemented and will be kept for the final build.
 - **Not committing to:** Saving pending orders to a file, a live countdown timer, support for multiple baristas, or a graphical interface. Our priority is to make the existing features reliable and well tested.
 
 ### Three-minute demo plan
@@ -147,7 +158,7 @@ A useful improvement would be to store temperature as a separate `Order` field o
 | --- | --- |
 | **Seongjin Nam** | Verify `OrderManager` ETA and cancellation behavior, review model tests, and coordinate the D4 integration. |
 | **Ash Satasia** | Review `LinkedQueue` behavior and interleaved enqueue/dequeue tests to confirm FIFO correctness. |
-| **Hasini Pottipati** | Review `Order` validation, Hot/Iced behavior, and `ConsoleView` output and tests. |
+| **Hasini Pottipati** | Review `Order` validation, Hot/Iced behavior, the time-placed feature, and `ConsoleView` output and tests. |
 | **Liangru Ji** | Review controller input flow and scripted controller tests; coordinate the three-minute console demo. |
 | **All members** | Review the final merged project, verify attribution, and prepare for the TA grading session. |
 
@@ -159,12 +170,12 @@ The table distinguishes **original contributions** from **Deliverable 4 revision
 | --- | --- |
 | `LinkedQueue.java` | **Ash Satasia:** Original singly linked generic FIFO queue implementation. **Seongjin Nam:** Included the queue in the D4 integrated build and verified its compatibility with the new features. |
 | `LinkedQueueTest.java` | **Ash Satasia:** Original queue test suite and FIFO/edge-case testing. **Seongjin Nam:** Integrated and reviewed D4 test revisions, including the interleaved operation coverage, with ChatGPT assistance. |
-| `Order.java` | **Hasini Pottipati:** Original order class, validation, price and preparation-time logic. **Seongjin Nam:** Integrated ChatGPT-assisted Hot/Iced support and related validation changes for D4. |
-| `OrderTest.java` | **Hasini Pottipati:** Original order unit tests. **Seongjin Nam:** Integrated ChatGPT-assisted updates for Hot/Iced and invalid-input cases and ran the revised tests. |
+| `Order.java` | **Hasini Pottipati:** Drafted the original order class, validation, and price and preparation-time logic on her own, then used Claude to improve it and compare it against the rubric. Added the time-placed feature for the final build with Claude's help. **Seongjin Nam:** Integrated ChatGPT-assisted Hot/Iced support and related validation changes for D4. |
+| `OrderTest.java` | **Hasini Pottipati:** Drafted the original order unit tests on her own, then used Claude to improve them and compare them against the rubric. Added the time-placed tests for the final build with Claude's help. **Seongjin Nam:** Integrated ChatGPT-assisted updates for Hot/Iced and invalid-input cases and ran the revised tests. |
 | `OrderManager.java` | **Seongjin Nam:** Order management, queue integration, validation, cancellation, and D4 ETA calculations; used ChatGPT assistance for implementation and revisions. |
 | `OrderManagerTest.java` | **Seongjin Nam:** Model tests for placement, FIFO behavior, validation, cancellation, and ETA; used ChatGPT to develop and revise test cases and ran them in Eclipse. |
-| `ConsoleView.java` | **Hasini Pottipati:** Original console view and input/output methods. **Seongjin Nam:** Integrated ChatGPT-assisted ETA output and updated menu text for D4. |
-| `ConsoleViewTest.java` | **Hasini Pottipati:** Original view tests. **Seongjin Nam:** Integrated ChatGPT-assisted updates for the new menu and ETA display and ran the tests. |
+| `ConsoleView.java` | **Hasini Pottipati:** Drafted the original console view and input/output methods on her own, then used Claude to improve them and compare them against the rubric. **Seongjin Nam:** Integrated ChatGPT-assisted ETA output and updated menu text for D4. |
+| `ConsoleViewTest.java` | **Hasini Pottipati:** Drafted the original view tests on her own, then used Claude to improve them and compare them against the rubric. **Seongjin Nam:** Integrated ChatGPT-assisted updates for the new menu and ETA display and ran the tests. |
 | `BrewQueueController.java` | **Liangru Ji:** Original controller structure and application flow. **Seongjin Nam:** Integrated ChatGPT-assisted Hot/Iced prompts, ETA handling, and updated menu flow for D4. |
 | `BrewQueueControllerTest.java` | **Liangru Ji:** Original scripted controller tests. **Seongjin Nam:** Integrated ChatGPT-assisted updates for temperature selection, ETA actions, and menu changes and ran the tests. |
 
@@ -174,6 +185,4 @@ The table distinguishes **original contributions** from **Deliverable 4 revision
 
 **Liangru Ji:** As described in our earlier project documentation, GenAI was used to review code, help organize an initial draft, and suggest the structure for `BrewQueueController` and its tests. The suggested work was reviewed and revised to fit the team's design.
 
-**Hasini Pottipati:** As described in our earlier project documentation, Claude was used to help draft `Order`, `ConsoleView`, and their tests using the planned method signatures and test cases. The resulting code was reviewed against the specification and MVC responsibilities.
-
-**Team note:** The original README did not include an individual GenAI-use statement for Ash Satasia. The team should confirm Ash's actual GenAI use (or non-use) before the final submission rather than making an unsupported claim. All team members should review the attribution table for accuracy before submitting.
+**Hasini Pottipati:** I drafted `Order` and `ConsoleView` on my own, based on our planned method signatures and test cases. I then used Claude to suggest improvements and to compare my work against the rubric, and I kept only the changes I reviewed and understood. The JUnit tests were created using GenAI.
