@@ -1,8 +1,15 @@
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.Locale;
+
 /**
  * Represents a customer's immutable order.
  * Both legacy drink names (e.g. "Latte") and temperature-qualified names
  * (e.g. "Iced Latte") are supported to preserve earlier functionality.
+ * Each order records the time it was placed.
  */
+
 public class Order {
     private static final String[] DRINKS = {
         "Coffee", "Latte", "Tea",
@@ -23,10 +30,15 @@ public class Order {
     private static final double[] SIZE_PRICES = {0.00, 1.00, 1.50};
     private static final double[] SIZE_PREP_MINUTES = {0.0, 1.0, 2.0};
 
+    // shows the time like "9:14 AM"
+    private static final DateTimeFormatter TIME_FORMAT =
+        DateTimeFormatter.ofPattern("h:mm a", Locale.US);
+
     private final int orderNumber;
     private final String customerName;
     private final String drinkType;
     private final String size;
+    private final LocalTime timePlaced;
 
     public Order(int orderNumber, String customerName, String drinkType, String size) {
         if (orderNumber <= 0) {
@@ -47,6 +59,8 @@ public class Order {
         this.customerName = customerName.trim();
         this.drinkType = drinkType;
         this.size = size;
+        // seconds aren't shown, so only the hour and minute are kept
+        this.timePlaced = LocalTime.now().truncatedTo(ChronoUnit.MINUTES);
     }
 
     public int getOrderNumber() {
@@ -65,6 +79,10 @@ public class Order {
         return size;
     }
 
+    public LocalTime getTimePlaced() {
+        return timePlaced;
+    }
+
     public double getPrice() {
         return DRINK_PRICES[indexOf(DRINKS, drinkType)]
             + SIZE_PRICES[indexOf(SIZES, size)];
@@ -81,8 +99,9 @@ public class Order {
         String prepTime = (minutes == Math.floor(minutes))
             ? String.format("%d", (int) minutes)
             : String.format("%.1f", minutes);
-        return String.format("#%d %s: %s %s, $%.2f, about %s min",
-            orderNumber, customerName, size, drinkType, getPrice(), prepTime);
+        return String.format("#%d %s: %s %s, $%.2f, about %s min, placed %s",
+            orderNumber, customerName, size, drinkType, getPrice(), prepTime,
+            timePlaced.format(TIME_FORMAT));
     }
 
     private static int indexOf(String[] options, String value) {
