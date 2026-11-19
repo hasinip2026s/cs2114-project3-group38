@@ -1,7 +1,12 @@
 import static org.junit.jupiter.api.Assertions.*;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
 /** Tests Order's validation, drink choices, prices and prep estimates. */
+
 public class OrderTest
 {
     @Test
@@ -184,11 +189,27 @@ public class OrderTest
 
 
     @Test
+    public void testGetTimePlaced()
+    {
+        LocalTime before = LocalTime.now().truncatedTo(ChronoUnit.MINUTES);
+        Order order = new Order(1, "Alex", "Latte", "Medium");
+        LocalTime after = LocalTime.now().truncatedTo(ChronoUnit.MINUTES);
+        LocalTime placed = order.getTimePlaced();
+
+        assertFalse(placed.isBefore(before));
+        assertFalse(placed.isAfter(after));
+        assertEquals(0, placed.getSecond());
+    }
+
+
+    @Test
     public void testToString()
     {
         Order order = new Order(4, "Alex", "Latte", "Medium");
+        String placed = order.getTimePlaced()
+            .format(DateTimeFormatter.ofPattern("h:mm a", Locale.US));
         assertEquals(
-            "#4 Alex: Medium Latte, $5.00, about 4 min",
+            "#4 Alex: Medium Latte, $5.00, about 4 min, placed " + placed,
             order.toString());
     }
 
